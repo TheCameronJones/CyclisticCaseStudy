@@ -22,11 +22,11 @@ In this simulated scenario I am a junior analyst who is working with the marketi
 ## Getting Started
 
 1. Raw Data is being kept [here](https://drive.google.com/drive/folders/1ZJvmPwEE5HXlWHBQ0NQ09IngUSoWAoX7?usp=sharing).    
-2. Data processing/transformation scripts are being kept [here](Repo folder containing data processing scripts/notebooks)
-3. Follow setup [instructions](Link to file)
+2. Data processing/transformation scripts are being kept [here](https://github.com/TheCameronJones/CyclisticCaseStudy/blob/959f9ef7eb36b7a5b910fa4a4a9618c01309a81b/CyclisticCaseStudy.Rmd)
+3. Follow setup [instructions](https://github.com/TheCameronJones/CyclisticCaseStudy/blob/959f9ef7eb36b7a5b910fa4a4a9618c01309a81b/CyclisticCaseStudy.Rmd)
 
 ## Featured Notebooks/Analysis/Deliverables
-* [Cyclistic Markdown](link)
+* [Cyclistic Markdown](https://github.com/TheCameronJones/CyclisticCaseStudy/blob/959f9ef7eb36b7a5b910fa4a4a9618c01309a81b/CyclisticCaseStudy.Rmd)
 * [Cyclistic Slide Deck](https://docs.google.com/presentation/d/1zroxVuxQpASXDeU32ZB6yL7w3FgSuwzUTALP_4CoLl0/edit?usp=sharing)
 
 
