@@ -1,0 +1,180 @@
+---
+title: "Cyclistic Case Study"
+author: "Cameron"
+date: '2023-03-01'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Cyclistic Capstone Project
+This project is the capstone project of the [Google Data Analytics Certificate course](https://grow.google/certificates/data-analytics/#?modal_active=none). The scenario involves a fictional company, Cyclistic, a bike sharing service based in Chicago. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore,the team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights,the team will design a new marketing strategy to convert casual riders into annual members. 
+
+## Ask
+The marketing team has come up with three questions that will need to be answered for this campaign. 
+1. How do annual members and casual riders use Cyclistic bikes differently?
+2. Why would casual riders buy Cyclistic annual memberships?
+3. How can Cyclistic use digital media to influence casual riders to become members?
+This report will be tackling the first question. 
+
+## Prepare
+The data used for this project comes from an actual company Divvy based in Chicago so it is primary data. They have done their own pre-cleaning to remove PII and trips less than 60 seconds but cleaning will still be necessary to ensure we have the best data and accurate analysis. As I am the only one involved in this project I will be responsible for the naming and storage of all the data.
+
+## Process
+The first thing I did was load the libraries necessary for cleaning, analysis, and visualizations
+
+```{r libraries}
+#Preparing the environment
+library("ggplot2")
+library("tidyverse")
+library("ggmap")
+library("ggthemes")
+library("maps")
+```
+
+I then loaded all of the cvs files and named them to create tables
+```{r loading cvs files}
+#Bringing in the data        
+feb_2022 <- read_csv("R/Projects/Cyclistic/202202-divvy-tripdata.csv")
+mar_2022 <- read_csv("R/Projects/Cyclistic/202203-divvy-tripdata.csv")
+apr_2022 <- read_csv("R/Projects/Cyclistic/202204-divvy-tripdata.csv")
+may_2022 <- read_csv("R/Projects/Cyclistic/202205-divvy-tripdata.csv")
+jun_2022 <- read_csv("R/Projects/Cyclistic/202206-divvy-tripdata.csv")
+jul_2022 <- read_csv("R/Projects/Cyclistic/202207-divvy-tripdata.csv")
+aug_2022 <- read_csv("R/Projects/Cyclistic/202208-divvy-tripdata.csv")
+sep_2022 <- read_csv("R/Projects/Cyclistic/202209-divvy-publictripdata.csv")
+oct_2022 <- read_csv("R/Projects/Cyclistic/202210-divvy-tripdata.csv")
+nov_2022 <- read_csv("R/Projects/Cyclistic/202211-divvy-tripdata.csv")
+dec_2022 <- read_csv("R/Projects/Cyclistic/202212-divvy-tripdata.csv")
+jan_2023 <- read_csv("R/Projects/Cyclistic/202301-divvy-tripdata.csv")
+
+```
+
+Next I dropped the NULL rows from all of the tables.
+```{r Dropping}
+apr_2022 <- apr_2022 %>% drop_na()
+aug_2022 <- aug_2022 %>% drop_na()
+dec_2022 <- dec_2022 %>% drop_na()
+feb_2022 <- feb_2022 %>% drop_na()
+jan_2023 <- jan_2023 %>% drop_na()
+jul_2022 <- jul_2022 %>% drop_na()
+jun_2022 <- jun_2022 %>% drop_na()
+mar_2022 <- mar_2022 %>% drop_na()
+may_2022 <- may_2022 %>% drop_na()
+nov_2022 <- nov_2022 %>% drop_na()
+oct_2022 <- oct_2022 %>% drop_na()
+sep_2022 <- sep_2022 %>% drop_na()
+```
+
+Then I brought all of the 12 months together under `cyc`
+
+```{r together}
+#Bringing it all together
+cyc <- rbind(feb_2022, mar_2022, apr_2022, may_2022, jun_2022, jul_2022, aug_2022, sep_2022, oct_2022, nov_2022, dec_2022, jan_2023)
+```
+
+After that I doubled checked to make sure all null rows were gone, removed any duplicate rows/
+```{r doublecheck}
+#Checking if there are missing values
+anyNA(cyc)
+head (cyc)
+
+#Removing any duplicate rows
+cyc <- cyc[!duplicated(cyc$ride_id), ]
+```
+
+The last bit of processing before I got to the analysis was to add a column for the day of the week the ride started on and a column for ride length. I then cleaned all rows which had a ride length less than one minute.
+```{r newcolumns}
+#Adding a ride length column and a day of week column
+cyclistic_clean <- cyc %>% mutate(ride_length = difftime(ended_at, started_at, units = "mins" ) ) %>% 
+  mutate(day_of_week = weekdays(started_at))
+head(cyclistic_clean)
+
+#Last step of cleaning filtering out ride lengths less than one
+cyclistic_clean <- cyclistic_clean %>% filter(ride_length >= 1 )
+
+summary(cyclistic_clean)
+```
+
+## Analyze
+
+Now I analyzed the data. I won't go into much detail because each line of code is explained. Some data visualizations are also included in the code.
+
+```{r analysis, echo=FALSE}
+#Changing the levels for the week data to appear in the correct order
+cyclistic_clean$day_of_week <- factor(cyclistic_clean$day_of_week, levels= c("Sunday", "Monday", 
+                                                                             "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+#Getting numbers of rides and a data visualization
+cyclistic_clean %>% group_by(member_casual) %>% count(member_casual)
+
+ggplot(data = cyclistic_clean) + geom_bar(mapping = aes(member_casual, fill = member_casual)) + 
+  labs(title = "Number of rides in the past 12 months", x = "Member or Casual Rider", fill = "Key")
+
+#Prepare data to find avg ride length
+cyclistic_clean$ride_length <- as.numeric(cyclistic_clean$ride_length)
+
+#Average ride length by day of week separated by member and casual
+cyclistic_clean %>% group_by(member_casual, day_of_week) %>% 
+  summarise(mean_ride_length=mean(ride_length),
+            .groups = 'drop')
+
+#Getting rides broken out by month
+cyclistic_clean %>% 
+  group_by(month = lubridate::floor_date(started_at, 'month'),member_casual) %>%
+  count()
+
+#Adding a month column to the data table
+cyclistic_clean$month <- as.Date(cut(cyclistic_clean$started_at, breaks = 'month'))
+
+#Making a table for the data visualization
+avg_ride_month <- cyclistic_clean %>% group_by(member_casual, month) %>% 
+  summarise(mean_ride_length=mean(ride_length),
+            .groups = 'drop')
+
+#Data visualization of mean ride length each month separated by member and casual
+ggplot(avg_ride_month, aes(x=month, y=mean_ride_length)) + 
+  geom_bar(aes(fill = member_casual),stat="identity", position = "dodge") + 
+  labs(title = "Average ride length by month", fill = "Key", x = "Month", y = "Average ride length")
+
+#Bar graph of rides each month broken out by members and casual riders
+ggplot(cyclistic_clean, aes(x=month, after_stat(count))) + 
+  geom_bar(aes(fill = member_casual), position = "dodge") + 
+  labs(title = "Number of rides separated by month", fill = "Key", x = "Month")
+
+
+#Counting the number or rides by weekday divided by member and casual
+cyclistic_clean %>% group_by(member_casual) %>% count(day_of_week)
+
+
+#Data Visualization for types of riders by day of the week
+ggplot(cyclistic_clean, aes(x=day_of_week,after_stat(count) )) + 
+  geom_bar(aes(fill = member_casual), position = "dodge") +
+  labs(title = "Number of rides separated by day of week", x = "Day of week", fill = "Key")
+  
+
+#Which stations are most popular with casual riders and members?
+cyclistic_clean %>% count(member_casual, start_station_name, sort = TRUE)
+cyclistic_clean %>% count(member_casual, end_station_name, sort = TRUE)
+
+#Preparing data for a map of the most popular stations
+top_stations <-cyclistic_clean %>% count(member_casual, start_station_name, sort = TRUE) %>% slice_head(n=25)
+
+top_stations_map <- top_stations %>% left_join(cyclistic_clean, by = join_by(start_station_name), multiple = "any") %>% 
+  select(member_casual.x, start_station_name, n, start_lat, start_lng)
+
+#Get the map for the data visualization
+chicago_map <- get_stamenmap(
+  bbox = c(left = -87.7, bottom = 41.7877 , right = -87.594, top = 41.9437), 
+  maptype = "terrain",
+  zoom = 11)
+ggmap(chicago_map) + # creates the map "background"
+  geom_point(data = top_stations_map, 
+             aes(x = start_lng, y = start_lat, size = n, color = member_casual.x)) +
+  theme_map() + labs(title = "Top 25 Start Stations by number of rides", size = "Number of rides", color = "Casual or Member")
+
+```
+
+## Share
+I took the insights and visualizations I got from this analysis and put it together in a slide deick which you can see right [here](https://docs.google.com/presentation/d/1zroxVuxQpASXDeU32ZB6yL7w3FgSuwzUTALP_4CoLl0/edit?usp=sharing)
