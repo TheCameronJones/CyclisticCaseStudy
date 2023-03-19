@@ -21,7 +21,7 @@ In this simulated scenario I am a junior analyst who is working with the marketi
 
 ## Getting Started
 
-1. Raw Data is being kept [here](Repo folder containing raw data) within this repo.    
+1. Raw Data is being kept [here](https://drive.google.com/drive/folders/1ZJvmPwEE5HXlWHBQ0NQ09IngUSoWAoX7?usp=sharing).    
 2. Data processing/transformation scripts are being kept [here](Repo folder containing data processing scripts/notebooks)
 3. Follow setup [instructions](Link to file)
 
