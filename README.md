@@ -16,7 +16,7 @@ The purpose of this project is to serve as a capstone project for the Google Dat
 * Google Sheets
 
 ## Project Description
-In this simulated scenario I am a junior analyst who is working with the marketing team of a bike sharing company called Cyclistic. We are
+In this simulated scenario I am a junior analyst who is working with the marketing team of a bike sharing company called Cyclistic. We are in the process of getting more subscribers but first we need to see what is the difference between subscribers and casual riders.
 
 
 ## Getting Started
