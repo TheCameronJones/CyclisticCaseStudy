@@ -1,9 +1,9 @@
-# Project Name
+# Cyclistic Case Study
 This project is a part of the [Google Data Analytics Certificate](https://grow.google/certificates/data-analytics/#?modal_active=none) at [Coursera](http://www.coursera.org).
 
 #### -- Project Status: [Completed]
 
-## Project Intro/Objective
+## Intro/Objective
 The purpose of this project is to serve as a capstone project for the Google Data Analytics Certificate course. 
 
 ### Methods Used
